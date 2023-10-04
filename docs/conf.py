@@ -15,7 +15,7 @@ here = Path(__file__).parent.resolve()
 
 # -- Project information
 
-project = 'DBSync'
+project = 'NewDBSync'
 copyright = '2023, Cited Inc.'
 author = 'Cited'
 
