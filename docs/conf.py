@@ -1,68 +1,99 @@
-# Configuration file for the Sphinx documentation builder.
+# -*- coding: utf-8 -*-
 
-import os
 import sys
-from pathlib import Path
+import os
+import re
 
-# -- Path setup --------------------------------------------------------------
+if not 'READTHEDOCS' in os.environ:
+    sys.path.insert(0, os.path.abspath('..'))
+sys.path.append(os.path.abspath('./demo/'))
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-sys.path.insert(0, os.path.abspath('../'))
-here = Path(__file__).parent.resolve()
-
-# -- Project information
-
-project = 'NewDBSync'
-copyright = '2023, Cited Inc.'
-author = 'Cited'
-
-release = '0.1'
-version = '0.1.0'
+from sphinx.locale import _
+from sphinx_rtd_theme import __version__
 
 
-# -- General configuration
+project = u'NewDbSync'
+copyright = u'2023, Cited, Inc.'
+slug = re.sub(r'\W+', '-', project.lower())
+version = __version__
+release = __version__
+author = u'acugis'
+copyright = author
+language = 'en'
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
 extensions = [
-#    'myst_parser',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
-    'sphinx.ext.duration',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-]
-autosectionlabel_prefix_document = True
-
-# The suffix of source filenames.
-source_suffix = ['.rst', '.md']
-
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
-    'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
-}
-intersphinx_disabled_domains = ['std']
-suppress_warnings = [
-    # throws an error due to not found reference targets to files not in docs/
-    'ref.myst',
-    # throws an error due to multiple "Added" labels in "changelog.md"
-    'autosectionlabel.*'
+    'sphinxcontrib.httpdomain',
+    'sphinx_rtd_theme',
 ]
 
 templates_path = ['_templates']
+source_suffix = '.rst'
+exclude_patterns = []
+locale_dirs = ['locale/']
+gettext_compact = False
 
-# -- Options for HTML output
+master_doc = 'index'
+suppress_warnings = ['image.nonlocal_uri']
+pygments_style = 'default'
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
+intersphinx_mapping = {
+    'rtd': ('https://docs.readthedocs.io/en/latest/', None),
+    'sphinx': ('http://www.sphinx-doc.org/en/stable/', None),
+}
+
 html_theme = 'sphinx_rtd_theme'
+html_theme_options = {
+    'logo_only': False,
+    'display_version': True
+}
+html_theme_path = ["_themes", ]
+html_logo = "_static/jri-publihser-top-icon.fw.png"
+html_show_sourcelink = True
 
-# -- Options for EPUB output
-epub_show_urls = 'footnote'
+htmlhelp_basename = slug
+
+latex_documents = [
+  ('index', '{0}.tex'.format(slug), project, author, 'manual'),
+]
+
+man_pages = [
+    ('index', slug, project, [author], 1)
+]
+
+texinfo_documents = [
+  ('index', slug, project, author, slug, project, 'Miscellaneous'),
+]
+
+
+# Extensions to theme docs
+def setup(app):
+    from sphinx.domains.python import PyField
+    from sphinx.util.docfields import Field
+
+    app.add_object_type(
+        'confval',
+        'confval',
+        objname='configuration value',
+        indextemplate='pair: %s; configuration value',
+        doc_field_types=[
+            PyField(
+                'type',
+                label=_('Type'),
+                has_arg=False,
+                names=('type',),
+                bodyrolename='class'
+            ),
+            Field(
+                'default',
+                label=_('Default'),
+                has_arg=False,
+                names=('default',),
+            ),
+        ]
+    )
+
+    
